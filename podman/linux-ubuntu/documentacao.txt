@@ -1,0 +1,56 @@
+
+#Inicialize uma máquina virtual Podman
+podman machine init
+
+#Inicie a máquina virtual
+podman machine start
+
+#Verifica as imagens
+podman images
+
+#Removendo imagens por id
+podman rmi <image_id>
+
+#Verifica containers em execucao
+podman ps
+podman ps -a #containers que nao estao em execucao
+
+#Remove o container
+podman rm <container_id>
+
+#Constroe a imagem Docker, atencao o container foi nomeado como (spark-container)
+podman build -t imagem-ubuntu-spark .
+
+
+#Criar o container (Opcao 1) manter o processo continuo rodando
+podman run -d --name container-ubuntu-spark imagem-ubuntu-spark
+podman run -d --name container-ubuntu-spark -v $HOME/.local:/root/.local imagem-ubuntu-spark
+
+-v $HOME/.local:/root/.local → Persiste pacotes Python entre execuções.
+
+#Iniciar o Spark manualmente dentro do container
+/opt/spark/bin/spark-shell
+#ou iniciar o spark no container via modo interativo (obs o container nao ira persistir)
+podman run -it --name container-ubuntu-spark imagem-ubuntu-spark /opt/spark/bin/spark-shell
+
+#Criar o container (Opcao 2) rodando em modo interativo
+podman run -it --rm -v $HOME/.local:/root/.local container-ubuntu-spark
+
+-it → Mantém o terminal interativo.
+--rm → Remove o container ao sair (se quiser persistência total, remova essa flag).
+-v $HOME/.local:/root/.local → Persiste pacotes Python entre execuções.
+
+#Iniciar o container parado
+podman start container-ubuntu-spark
+
+#Entrar no container apos iniciado
+podman exec -it container-ubuntu-spark /bin/bash
+
+#Desligar o container
+podman stop container-ubuntu-spark
+
+#Verificar o log
+podman logs container-ubuntu-spark
+
+#Sair do Scala
+:quit
