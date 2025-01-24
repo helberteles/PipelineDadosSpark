@@ -40,7 +40,7 @@ podman run -it --rm -v $HOME/.local:/root/.local container-ubuntu-spark
 --rm → Remove o container ao sair (se quiser persistência total, remova essa flag).
 -v $HOME/.local:/root/.local → Persiste pacotes Python entre execuções.
 
-#Iniciar o container parado
+#Iniciar/Ligar o container parado
 podman start container-ubuntu-spark
 
 #Entrar no container apos iniciado
@@ -54,3 +54,16 @@ podman logs container-ubuntu-spark
 
 #Sair do Scala
 :quit
+
+#Entrar no Pyspark
+pyspark
+
+#Sair do Pyspark
+exit()
+quit()
+sc.stop() + exit()
+
+
+#Limpando tela Pyspark
+import os
+os.system('clear')

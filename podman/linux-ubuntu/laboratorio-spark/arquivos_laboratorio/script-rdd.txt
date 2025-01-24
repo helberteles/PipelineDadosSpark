@@ -1,20 +1,15 @@
-#Prof. Fernando Amaral
-#abrir pyspark
-pyspark
-#SparkContext - variável sc
-sc
 #criar RDD
 numeros = sc.parallelize([1,2,3,4,5,6,7,8,9,10])
 numeros.collect()
 
-#diversas ações 
+#diversas aÃ§Ãµes 
 numeros.take(5)
 numeros.top(5)
 
 #todos os elementos
 numeros.collect()
 
-#operações aritiméticas
+#operaÃ§Ãµes aritimÃ©ticas
 numeros.count()
 numeros.mean()
 numeros.sum()
@@ -22,16 +17,16 @@ numeros.max()
 numeros.min()
 numeros.stdev()
 
-#transformações
+#transformaÃ§Ãµes
 #filtro
 filtro = numeros.filter(lambda filtro: filtro > 2)
 filtro.collect()
 
-#amostra com reposição 
+#amostra com reposiÃ§Ã£o 
 amostra = numeros.sample(True,0.5,1)
 amostra.collect()
 
-#map, aplica uma função
+#map, aplica uma funÃ§Ã£o
 mapa = numeros.map(lambda mapa: mapa * 2)
 mapa.collect()
 
@@ -42,11 +37,11 @@ numeros2 = sc.parallelize([6,7,8,9,10])
 uniao = numeros.union(numeros2)
 uniao.collect()
 
-#intersecção
+#intersecÃ§Ã£o
 interseccao = numeros.intersection(numeros2)
 interseccao.collect()
 
-#subtração
+#subtraÃ§Ã£o
 subtrai =numeros.subtract(numeros2)
 subtrai.collect()
 
@@ -54,7 +49,7 @@ subtrai.collect()
 cartesiano = numeros.cartesian(numeros2)
 cartesiano.collect()
 
-#ação, contar por valor numero de vezes que cada valor aparece
+#aÃ§Ã£o, contar por valor numero de vezes que cada valor aparece
 cartesiano.countByValue()
 
 #compras, codigo do cliente e valor
@@ -68,7 +63,7 @@ valores.collect()
 #conta elementos por chave
 compras.countByKey()
 
-#aplica função no valor, sem aterar chave
+#aplica funÃ§Ã£o no valor, sem aterar chave
 soma = compras.mapValues(lambda soma: soma + 1)
 soma.collect()
 
