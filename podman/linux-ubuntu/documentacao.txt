@@ -9,33 +9,29 @@ podman machine start
 podman images
 
 #Removendo imagens por id
-podman rmi <image_id>
+podman rmi imagem-ubuntu-spark
 
 #Verifica containers em execucao
 podman ps
 podman ps -a #containers que nao estao em execucao
 
 #Remove o container
-podman rm <container_id>
+podman rm container-ubuntu-spark
 
 #Constroe a imagem Docker, atencao o container foi nomeado como (spark-container)
 podman build -t imagem-ubuntu-spark .
 
 
-#Criar o container (Opcao 1) manter o processo continuo rodando
-podman run -d --name container-ubuntu-spark imagem-ubuntu-spark
+#(Opção 1) Criar o container manter o processo continuo rodando
 podman run -d --name container-ubuntu-spark -v $HOME/.local:/root/.local imagem-ubuntu-spark
+podman run -d --name container-ubuntu-spark -v $HOME/.local:/laboratorio-spark imagem-ubuntu-spark
 
+#(Opção 2) Criar container com o mapeamento de pasta
+podman run -d --name container-ubuntu-spark -v "$(pwd)/laboratorio-spark/arquivos_laboratorio:/laboratorio-spark/arquivos_laboratorio" imagem-ubuntu-spark
+
+$(pwd) → expande para o diretório atual.
+-d → executa o container em segundo plano
 -v $HOME/.local:/root/.local → Persiste pacotes Python entre execuções.
-
-#Iniciar o Spark manualmente dentro do container
-/opt/spark/bin/spark-shell
-#ou iniciar o spark no container via modo interativo (obs o container nao ira persistir)
-podman run -it --name container-ubuntu-spark imagem-ubuntu-spark /opt/spark/bin/spark-shell
-
-#Criar o container (Opcao 2) rodando em modo interativo
-podman run -it --rm -v $HOME/.local:/root/.local container-ubuntu-spark
-
 -it → Mantém o terminal interativo.
 --rm → Remove o container ao sair (se quiser persistência total, remova essa flag).
 -v $HOME/.local:/root/.local → Persiste pacotes Python entre execuções.
@@ -45,6 +41,9 @@ podman start container-ubuntu-spark
 
 #Entrar no container apos iniciado
 podman exec -it container-ubuntu-spark /bin/bash
+
+#Iniciar o Spark manualmente dentro do container
+/opt/spark/bin/spark-shell
 
 #Desligar o container
 podman stop container-ubuntu-spark
@@ -58,6 +57,10 @@ podman logs container-ubuntu-spark
 #Entrar no Pyspark
 pyspark
 
+#Listar diretorios no pyspark
+import os
+print(os.listdir("/laboratorio-spark"))
+
 #Sair do Pyspark
 exit()
 quit()
@@ -67,3 +70,20 @@ sc.stop() + exit()
 #Limpando tela Pyspark
 import os
 os.system('clear')
+
+
+/////////////////////////////EXEMPLO
+#Comando para iniciar o Contêiner mapeando a rede bombril
+
+#Caminho da pasta WSl x Container
+minha pasta no wsl: /opt/rede_bombril
+minha pasta no container: /opt/bombril/rede_bombril
+
+#Descritivo do apontamento
+podman run -d --name bombril_gestaoavista -v diretorio_wsl:diretorio_container -v diretorio_arquivos:diretorio_container bombril_gestaoavista
+
+#Modelo apontando para pasta do usuario
+podman run -d --name bombril_gestaoavista -v /opt/rede_bombril:/opt/bombril/rede_bombril -v /mnt/c/Users/helber.teles/Documents/bombril_ubuntu/bombril:/opt/bombril bombril_gestaoavista
+
+#Modelo apontando para o c:/ da maquina
+podman run -d --name bombril_gestaoavista -v /opt/rede_bombril:/opt/bombril/rede_bombril -v /mnt/c/DSH_GestaoVista/docker/bombril_ubuntu/bombril:/opt/bombril bombril_gestaoavista

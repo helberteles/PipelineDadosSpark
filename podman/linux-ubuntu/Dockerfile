@@ -36,7 +36,7 @@ WORKDIR /laboratorio-spark
 
 
 # Cria os diretórios onde os volumes serão montados
-RUN mkdir -p /laboratorio-spark/arquivos_laboratorio /laboratorio-spark/arquivos_laboratorio
+RUN mkdir -p /laboratorio-spark/arquivos_laboratorio
 
 #Uso interativo do container
 #CMD ["/bin/bash"]
