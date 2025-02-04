@@ -60,6 +60,7 @@ pyspark
 #Listar diretorios no pyspark
 import os
 print(os.listdir("/laboratorio-spark"))
+print(os.listdir("/laboratorio-spark/arquivos_laboratorio"))
 
 #Sair do Pyspark
 exit()

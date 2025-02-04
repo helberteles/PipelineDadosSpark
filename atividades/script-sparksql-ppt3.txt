@@ -1,0 +1,148 @@
+#importando bibliotecas
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+
+#mostrar bancos de dados e tabelas
+spark.sql("show databases").show()
+
+#criar banco de dados
+spark.sql("create database bdlaboratorio_spark")
+spark.sql("use bdlaboratorio_spark").show()
+
+#criar tabela gerenciada
+arqschema = "id INT, nome STRING, status STRING, cidade STRING, vendas INT, data STRING"
+tab_despachantes = spark.read.csv("/laboratorio-spark/arquivos_laboratorio/despachantes.csv", header=False, schema=arqschema)
+tab_despachantes.write.saveAsTable("tab_despachantes")
+
+#mostrar que a tabela existe
+spark.sql("select * from tab_despachantes").show()
+
+#mostra tabelas
+spark.sql("show tables").show()
+
+#mudar banco de dados
+spark.sql("use default").show()
+
+#executa novamente e mostrar que da erro
+spark.sql("select * from tab_despachantes").show()
+
+#voltar ao nosso banco de dados
+spark.sql("use bdlaboratorio_spark").show()
+
+# overwrite e append
+tab_despachantes.write.mode("overwrite").saveAsTable("tab_despachantes")
+
+#teste de pesistência
+from pyspark.sql import SparkSession
+spark.sql("use bdlaboratorio_spark").show()
+#mostrar que a tabela ainda existe
+spark.sql("select * from tab_despachantes").show()
+tab_despachantes.show()
+
+#o resultado de uma consulta sem um show gera um dataframe
+tab_despachantes = spark.sql("select * from tab_despachantes")
+tab_despachantes.show()
+
+#criar tabela não gerenciada e diretorio, salvando novamente no formato parquet, em outro diretorio
+print(os.listdir("/laboratorio-spark/arquivos_laboratorio"))
+tab_despachantes.write.format("parquet").save("/laboratorio-spark/arquivos_laboratorio/arquivos_parkarquet") 
+
+
+#informar o caminho 
+tab_despachantes.write.option("path", "/laboratorio-spark/arquivos_laboratorio/arquivos_parkarquet").saveAsTable("bdlaboratorio_sparkachantes_ng")
+
+#sobrescrevendo o arquoivo
+spark.conf.set("spark.sql.legacy.allowNonEmptyLocationInCTAS", "true")
+tab_despachantes.write.option("path", "/laboratorio-spark/arquivos_laboratorio/arquivos_parkarquet").saveAsTable("bdlaboratorio_sparkachantes_ng")
+
+
+
+#como saber se uma tabela é gerenciada ou não?
+#podemos observar que tab_despachantes não mostra o caminho
+spark.sql("show create table tab_despachantes").show(truncate=False)
+#tab_despachantes ng mostra, indicando que é não gerenciada
+spark.sql("show create table bdlaboratorio_sparkachantes_ng").show(truncate=False)
+
+#outra forma:
+spark.catalog.listTables()
+
+#mas onde está a tabela gerenciada?
+/home/fernando/spark-warehouse/bdlaboratorio_spark.db/tab_despachantes
+
+## Parte II - views
+
+tab_despachantes.createOrReplaceTempView("tab_despachantes")
+tab_despachantes.createOrReplaceGlobalTempView("tab_despachantes")
+
+## parte III consultas
+
+from pyspark.sql import functions as Func
+from pyspark.sql.functions import sum
+
+#mostrar a tabela
+spark.sql("Select * from tab_despachantes").show()
+tab_despachantes.show()
+
+#mostrar determinadas colunas
+spark.sql("Select nome,vendas from tab_despachantes").show()
+tab_despachantes.select("nome","vendas").show()
+
+#condição lógica
+spark.sql("Select nome,vendas from tab_despachantes where vendas > 20").show()
+tab_despachantes.select("id","nome","vendas").where(Func.col("vendas") > 20).show()
+
+spark.sql("Select cidade,sum(vendas) from tab_despachantes group by cidade order by 2 desc").show()
+tab_despachantes.groupBy("cidade").agg(sum("vendas")).orderBy(Func.col("sum(vendas)").desc()).show()
+
+##
+
+recschema = "idrec INT, datarec STRING, idbdlaboratorio_spark INT"
+reclamacoes = spark.read.csv("/laboratorio-spark/arquivos_laboratorio/reclamacoes.csv", header=False, schema=recschema)
+reclamacoes.write.saveAsTable("reclamacoes")
+
+#inner join
+spark.sql("select reclamacoes.*, tab_despachantes.nome from tab_despachantes inner join reclamacoes  on (tab_despachantes.id = reclamacoes.idbdlaboratorio_spark)").show()
+
+#righ join deve trazer o mesmo resultado, pois todas as reclamações tem um bdlaboratorio_sparkachante
+spark.sql("select reclamacoes.*, tab_despachantes.nome from tab_despachantes right join reclamacoes on (tab_despachantes.id = reclamacoes.idbdlaboratorio_spark)").show()
+
+#left join traz mais colunas e campos nulos, pois alguns tab_despachantes não tem reclações
+spark.sql("select reclamacoes.*, tab_despachantes.nome from tab_despachantes left join reclamacoes  on (tab_despachantes.id = reclamacoes.idbdlaboratorio_spark)").show()
+
+#inner join
+tab_despachantes.join(reclamacoes,tab_despachantes.id == reclamacoes.idbdlaboratorio_spark, "inner").select("idrec","datarec","idbdlaboratorio_spark","nome").show()
+
+#right
+tab_despachantes.join(reclamacoes,tab_despachantes.id == reclamacoes.idbdlaboratorio_spark, "right").select("idrec","datarec","idbdlaboratorio_spark","nome").show()
+
+#left
+tab_despachantes.join(reclamacoes,tab_despachantes.id == reclamacoes.idbdlaboratorio_spark, "right").select("idrec","datarec","idbdlaboratorio_spark","nome").show()
+
+/*
+spark-sql
+acessando o sql via spark (spark-sql) para interagir com sql
+*/
+spark-sql
+
+--limpar tela
+Ctrl + L
+
+--sair do spark-sql
+quit;
+
+show databases;
+use bdlaboratorio_spark;
+show tables;
+
+Select * from tab_despachantes;
+
+Select nome,vendas from tab_despachantes;
+
+--condição lógica
+Select nome,vendas from tab_despachantes where vendas > 20;
+
+--agrupar
+Select cidade,sum(vendas) from tab_despachantes group by cidade order by 2 desc;
+
+--join
+select reclamacoes.*, tab_despachantes.nome from tab_despachantes inner join reclamacoes  on (tab_despachantes.id = reclamacoes.idbdlaboratorio_spark);
